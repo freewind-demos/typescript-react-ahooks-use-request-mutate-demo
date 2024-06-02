@@ -1,28 +1,35 @@
-import React, {FC, useState} from 'react';
+import { useRequest } from "ahooks";
+import React, { FC } from 'react';
 import './Hello.pcss';
-import {useRequest} from "ahooks";
 
 type Props = {};
 
-export const Hello: FC<Props> = ({}) => {
-    const [version, setVersion] = useState(0)
-
+export const Hello: FC<Props> = ({ }) => {
     const request = useRequest(async () => {
-        console.log("### version", version)
         return new Promise<number>(resolve => {
             setTimeout(() => {
-                resolve(version);
+                resolve(1);
             }, 1000)
         })
+    }, {
+        onBefore: (data) => {
+            console.log("### onBefore", data);
+        },
+        onFinally: (data) => {
+            console.log("### onFinished", data);
+        },
+        onSuccess: (data) => {
+            console.log("### onSuccess", data);
+        }
     })
+
     return <div className={'Hello'}>
         <h1>Hello React</h1>
         <div>
             <div>
                 <button onClick={() => {
-                    setVersion(n => n + 1);
-                    request.refresh()
-                }}>update
+                    request.mutate(Date.now())
+                }}>Mutate
                 </button>
             </div>
             <div>request:
